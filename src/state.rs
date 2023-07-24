@@ -1,6 +1,5 @@
-use serde::{Serialize, Deserialize};
 use sqlx::PgPool;
-
+use crate::error::Result;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -8,12 +7,12 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn new() -> AppState {
+    pub async fn new() -> Result<AppState> {
         let conn_str = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-        let pool = PgPool::connect(&conn_str).await.unwrap();
-        sqlx::migrate!("./migrations").run(&pool).await.unwrap();
-        AppState {
+        let pool = PgPool::connect(&conn_str).await?;
+        sqlx::migrate!("./migrations").run(&pool).await?;
+        Ok(AppState {
             pool
-        }
+        })
     }
 }
