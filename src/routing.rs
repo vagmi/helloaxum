@@ -38,7 +38,10 @@ mod tests {
     async fn test_create_router() {
         let router = create_router();
         let resp = router.oneshot(
-            Request::builder().uri("/").body(Body::empty()).unwrap()).await.unwrap();
+            Request::builder()
+            .method(axum::http::method::Method::GET)
+                    .uri("/")
+                    .body(Body::empty()).unwrap()).await.unwrap();
         assert_eq!(resp.status(), 200);
         
     }
