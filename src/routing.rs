@@ -17,7 +17,8 @@ pub fn create_router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use axum::extract::Path;
+    use axum::{extract::Path, http::Request, body::{Body, self}, Router};
+    use tower::ServiceExt;
     use super::*;
 
     #[tokio::test]
@@ -31,5 +32,14 @@ mod tests {
         let res = greet_name(Path(("Axum".to_string(),42))).await;
         assert_eq!(res, "Happy 42 birthday, Axum!");
     
+    }
+
+    #[tokio::test]
+    async fn test_create_router() {
+        let router = create_router();
+        let resp = router.oneshot(
+            Request::builder().uri("/").body(Body::empty()).unwrap()).await.unwrap();
+        assert_eq!(resp.status(), 200);
+        
     }
 }
